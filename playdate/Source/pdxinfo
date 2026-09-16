@@ -1,0 +1,6 @@
+name=Formula1
+author=Willems Davy aka Joyrider3774
+description=Game and Watch style formula 1 racing game
+bundleID=com.joyrider3774.formula1.embedded
+version=1.0
+buildNumber=1
