@@ -159,7 +159,10 @@ void Game_Loop(void)
         prevbuttons = buttons;
         buttons = Platform_GetButtons();
 
-        if((buttons & BUTTON_UP) && (buttons & BUTTON_DOWN) && !(prevbuttons & BUTTON_DOWN))
+        //debug mode is toggled with (A) and left and down together, whichever of them is
+        //pressed last. The dpad alone would trigger it while playing
+        const uint8_t debugCombo = BUTTON_A | BUTTON_LEFT | BUTTON_DOWN;
+        if(((buttons & debugCombo) == debugCombo) && ((prevbuttons & debugCombo) != debugCombo))
         {
             debugMode = !debugMode;
             //the screens only draw what changed, the debug header has to be drawn over

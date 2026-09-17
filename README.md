@@ -66,7 +66,7 @@ The aim of the game, is to avoid hitting other traffic coming down the screen, y
 - Left: Move Player left
 - Right / B: Move Player right
 - Any button: Start a new game at the boot or gameover screen
-- Up + Down: Show or hide the debug info
+- (A) + Left + Down: Show or hide the debug info
 
 ## Credits
 - Graphics are made by me willems davy aka joyrider3774 using gimp
