@@ -1,5 +1,5 @@
 # devkitARM for the Game Boy Advance. DEVKITPRO is the folder holding devkitARM, libgba and tools
-# (C:/gba_dev by default, or the DEVKITPRO environment variable).
+# (C:/devkitarm by default, or the DEVKITPRO environment variable).
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
@@ -8,7 +8,7 @@ if(DEFINED ENV{DEVKITPRO} AND NOT DEVKITPRO)
     file(TO_CMAKE_PATH "$ENV{DEVKITPRO}" DEVKITPRO)
 endif()
 if(NOT DEVKITPRO)
-    set(DEVKITPRO "C:/gba_dev")
+    set(DEVKITPRO "C:/devkitarm")
 endif()
 set(DEVKITPRO "${DEVKITPRO}" CACHE PATH "folder with devkitARM, libgba and tools")
 

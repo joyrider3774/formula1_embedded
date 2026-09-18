@@ -1,5 +1,5 @@
 # Game Boy Advance build of Formula1: the game's own sources with the PLATFORM_GBA platform
-# (source/formula1_embedded/PlatformGBA.*), devkitARM and libgba (toolchain.cmake, C:/gba_dev by default).
+# (source/formula1_embedded/PlatformGBA.*), devkitARM and libgba (toolchain.cmake, C:/devkitarm by default).
 #
 # With MSYS2's cmake and ninja, from this folder:
 #   cmake -S . -B build -G Ninja
