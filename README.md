@@ -3,6 +3,13 @@
 
 Formula 1 Game & Watch is a small, fictive formula 1 game & watch style lcd game with high score keeping. The Game was initially created over a decade ago for a small retrogame competition, after which it got ported to the gp2x. This version is based on the gp2x version but with added high scoring.
 
+## Screenshots
+The browser build, at twice the game's own 128x128:
+
+| Title screen | In game |
+| --- | --- |
+| ![Formula1 title screen](metadata/screenshots/title.png) | ![Formula1 in game](metadata/screenshots/ingame.png) |
+
 ## Devices
 Every [release](https://github.com/joyrider3774/formula1_embedded/releases) has a build for every device. `releases/` is where a build of your own puts them, it is not part of the repository:
 
