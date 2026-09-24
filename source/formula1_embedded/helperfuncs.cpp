@@ -110,7 +110,7 @@ void drawImagePart(int x, int y, int sx, int sy, int w, int h, const uint8_t* da
         uint8_t* d = &((uint8_t*)buffer)[dy * WINDOW_WIDTH + dx];
         //RGB332, the same conversion SetBufferPixel does
         for (int c = 0; c < cols; c++)
-            d[c] = (uint8_t)(((row[c] & 0xE000) >> 8) | ((row[c] & 0x0700) >> 6) | ((row[c] & 0x0018) >> 3));
+            d[c] = ToBuffer332(row[c], (int16_t)(dx + c), (int16_t)dy);
   #else
         for (int c = 0; c < cols; c++)
             SetBufferBit((uint8_t*)buffer, dx + c, dy, row[c]);

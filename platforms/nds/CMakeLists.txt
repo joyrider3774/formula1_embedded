@@ -65,7 +65,8 @@ set(ARCH_FLAGS -march=armv5te -mtune=arm946e-s -mthumb -mthumb-interwork)
 
 add_executable(${GAME_NAME}.elf ${GAME_SOURCES})
 target_compile_definitions(${GAME_NAME}.elf PRIVATE PLATFORM_NDS __NDS__ ARM9
-    SCREENBUFFER=${SCREENBUFFER} SCALESCREEN=${SCALESCREEN}
+    SCREENBUFFER=${SCREENBUFFER}
+    DITHERING=${DITHERING} SCALESCREEN=${SCALESCREEN}
     FORCESKIN=${FORCESKIN} FORCEDEBUG=${FORCEDEBUG})
 target_include_directories(${GAME_NAME}.elf PRIVATE "${GAME_DIR}"
     "${DEVKITPRO}/libnds/include" "${DEVKITPRO}/calico/include")
@@ -84,3 +85,11 @@ add_custom_command(TARGET ${GAME_NAME}.elf POST_BUILD
             -7 "${DEVKITPRO}/calico/bin/ds7_maine.elf"
             -b "${DEVKITPRO}/calico/share/nds-icon.bmp" "${NDS_TITLE}$<SEMICOLON>${NDS_SUBTITLE1}$<SEMICOLON>${NDS_SUBTITLE2}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} VERBATIM)
+# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
+# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
+# to gain from it, see DITHERING in defines.h
+set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
+if(NOT DITHERING MATCHES "^(0|1)$")
+    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
+endif()
+

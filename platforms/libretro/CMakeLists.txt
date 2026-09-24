@@ -48,7 +48,8 @@ add_library(formula1_libretro SHARED ${GAME_SOURCES})
 # the name frontends look for: formula1_libretro.dll / .so, without the lib gcc puts in front
 set_target_properties(formula1_libretro PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
 target_compile_definitions(formula1_libretro PRIVATE PLATFORM_LIBRETRO LIBRETRO_GAME_NAME="Formula1" LIBRETRO_GAME_VERSION="1.0"
-    SCREENBUFFER=${SCREENBUFFER} FORCESKIN=${FORCESKIN} FORCEDEBUG=${FORCEDEBUG})
+    SCREENBUFFER=${SCREENBUFFER}
+    DITHERING=${DITHERING} FORCESKIN=${FORCESKIN} FORCEDEBUG=${FORCEDEBUG})
 target_include_directories(formula1_libretro PRIVATE "${GAME_DIR}" "${LIBRETRO_COMMON_DIR}/include")
 target_compile_options(formula1_libretro PRIVATE -ffunction-sections -fdata-sections)
 
@@ -63,3 +64,11 @@ endif()
 # the core's info file next to the core
 add_custom_command(TARGET formula1_libretro POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/formula1_libretro.info" "$<TARGET_FILE_DIR:formula1_libretro>/formula1_libretro.info")
+# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
+# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
+# to gain from it, see DITHERING in defines.h
+set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
+if(NOT DITHERING MATCHES "^(0|1)$")
+    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
+endif()
+

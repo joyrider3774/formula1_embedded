@@ -79,7 +79,15 @@ else()
     endif()
 endif()
 
-target_compile_definitions(${GAME_TARGET} PRIVATE PLATFORM_PLAYDATE SCREENBUFFER=${SCREENBUFFER} FORCESKIN=${FORCESKIN} FORCEDEBUG=${FORCEDEBUG})
+target_compile_definitions(${GAME_TARGET} PRIVATE PLATFORM_PLAYDATE SCREENBUFFER=${SCREENBUFFER} DITHERING=${DITHERING} FORCESKIN=${FORCESKIN} FORCEDEBUG=${FORCEDEBUG})
 target_include_directories(${GAME_TARGET} PRIVATE "${GAME_DIR}")
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)
+# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
+# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
+# to gain from it, see DITHERING in defines.h
+set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
+if(NOT DITHERING MATCHES "^(0|1)$")
+    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
+endif()
+
