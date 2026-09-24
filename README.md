@@ -73,6 +73,7 @@ Every [release](https://github.com/joyrider3774/formula1_embedded/releases) has 
 | [PlayStation Vita](https://en.wikipedia.org/wiki/PlayStation_Vita) | Vita_Formula1.vpk | install it with VitaShell on a Vita with homebrew enabled, or open it in Vita3K |
 | Windows | Windows_Formula1.exe | runs on its own, the high score is saved next to it in Formula1.sav |
 | MS-DOS | DOS_Formula1.zip | unzip FORMULA1.EXE onto a DOS machine or into DOSBox and run it, the high score is saved next to it in FORMULA1.SAV |
+| MS-DOS, not dithered | DOS_Formula1_ND.zip | the same program with `DITHERING` 0, unzip FORMU_ND.EXE and run it the same way. On a 256 colour screen a shade the palette has no colour for is the nearer one it does have, instead of a pattern of the two |
 | Browser | Web_Formula1.zip | upload it to an itch.io HTML project, or unzip it and open index.html from a web server, the high score is saved in the browser |
 
 The Tufty 2350 has no speaker, the game is silent there. Holding RESET until the rear LEDs are dark puts it to sleep, a front button wakes it up again, with UP and DOWN held as well it goes into shipping mode instead.
