@@ -40,6 +40,14 @@ if(NOT SCREENBUFFER MATCHES "^(0|1|8|16)$")
     message(FATAL_ERROR "SCREENBUFFER has to be 0, 1, 8 or 16, not ${SCREENBUFFER}")
 endif()
 
+# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
+# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
+# to gain from it, see DITHERING in defines.h
+set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
+if(NOT DITHERING MATCHES "^(0|1)$")
+    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
+endif()
+
 # 1 = scaled to 160x160, 0 = 1:1 in the middle, see SCALESCREEN in PlatformGBA.h
 set(SCALESCREEN 1 CACHE STRING "SCALESCREEN setting: 1 or 0")
 
@@ -76,11 +84,3 @@ add_custom_command(TARGET ${GAME_NAME}.elf POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary ${GAME_NAME}.elf ${GAME_NAME}.gba
     COMMAND ${GBAFIX} ${GAME_NAME}.gba -t${GBA_TITLE} -c${GBA_CODE} -mJD -r0
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
-# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
-# to gain from it, see DITHERING in defines.h
-set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
-if(NOT DITHERING MATCHES "^(0|1)$")
-    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
-endif()
-

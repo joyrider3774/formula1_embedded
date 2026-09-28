@@ -34,6 +34,14 @@ if(NOT SCREENBUFFER MATCHES "^(1|8|16)$")
     message(FATAL_ERROR "SCREENBUFFER has to be 1, 8 or 16, not ${SCREENBUFFER}")
 endif()
 
+# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
+# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
+# to gain from it, see DITHERING in defines.h
+set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
+if(NOT DITHERING MATCHES "^(0|1)$")
+    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
+endif()
+
 # -1 = the default skin, or black & white with a 1 bpp buffer, n = skin n, see FORCESKIN in defines.h
 set(FORCESKIN -1 CACHE STRING "FORCESKIN setting")
 
@@ -64,11 +72,3 @@ endif()
 # the core's info file next to the core
 add_custom_command(TARGET formula1_libretro POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/formula1_libretro.info" "$<TARGET_FILE_DIR:formula1_libretro>/formula1_libretro.info")
-# 1 = the colours of an image are spread over the ones the buffer can hold instead of every colour
-# becoming the nearest one there is, 0 = they are not. An 8 bpp and a 1 bpp buffer have something
-# to gain from it, see DITHERING in defines.h
-set(DITHERING 0 CACHE STRING "DITHERING setting: 0 or 1")
-if(NOT DITHERING MATCHES "^(0|1)$")
-    message(FATAL_ERROR "DITHERING has to be 0 or 1, not ${DITHERING}")
-endif()
-
