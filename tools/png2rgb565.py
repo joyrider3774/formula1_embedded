@@ -12,7 +12,13 @@ import os
 import sys
 from PIL import Image
 
+import onebit
+
 SKIN_PREFIX = {"default": "default", "black_white": "black_white"}
+#The black & white skin shows two colours, so it is packed one bit a pixel rather than kept
+#as RGB565, which is both smaller and quicker to draw, see tools/onebit.py. This game has no
+#transparent colour, so none of its pictures carries a mask
+ONE_BIT_SKINS = {"black_white"}
 
 
 def to_rgb565(path):
@@ -55,7 +61,13 @@ def main():
             name = png[:-4].replace("-", "_")
             width, height, pixels = to_rgb565(os.path.join(skins_dir, skin, png))
             out = os.path.join(images_dir, skin, name + "_RGB565_LE.h")
-            write_header(out, png, "%s_%s" % (prefix, name), width, height, pixels)
+            if skin in ONE_BIT_SKINS:
+                data = onebit.encode(pixels, width, height, None)
+                onebit.write_header(out, png, "%s_%s" % (prefix, name),
+                                    "%s_%s_data" % (prefix, name), width, height, data,
+                                    "png2rgb565.py")
+            else:
+                write_header(out, png, "%s_%s" % (prefix, name), width, height, pixels)
             print("%-12s %-20s %dx%d" % (skin, png, width, height))
 
 
