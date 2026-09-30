@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "commonvars.h"
 #include "helperfuncs.h"
+#include "fourbitimage.h"
 //the one bit pictures of the black & white skin, shared with anything else
 //that reads them
 #include "onebitimage.h"
@@ -25,6 +26,14 @@ static inline const uint16_t* ImageRow(const void* src, uint16_t* scratch, int c
 #include "images/default/enemy_RGB565_LE.h"
 #include "images/default/lcdfont_RGB565_LE.h"
 #include "images/default/player_RGB565_LE.h"
+#endif
+
+#if FORCESKIN == skinDefault4b
+#include "images/default_4b/background_RGB565_LE.h"
+#include "images/default_4b/bigfont_RGB565_LE.h"
+#include "images/default_4b/enemy_RGB565_LE.h"
+#include "images/default_4b/lcdfont_RGB565_LE.h"
+#include "images/default_4b/player_RGB565_LE.h"
 #endif
 
 #if FORCESKIN == skinBlackWhite
@@ -58,6 +67,17 @@ void preloadImages(void)
             imgPlayer = default_player_data;
             break;
 #endif
+#if FORCESKIN == skinDefault4b
+        case skinDefault4b:
+            ColorWhite = SCREEN.color565(255,255,255);
+            ColorBlack = SCREEN.color565(0,0,0);
+            imgBackground = default_4b_background_data;
+            imgBigFont = default_4b_bigfont_data;
+            imgLcdFont = default_4b_lcdfont_data;
+            imgEnemy = default_4b_enemy_data;
+            imgPlayer = default_4b_player_data;
+            break;
+#endif
 #if FORCESKIN == skinBlackWhite
         case skinBlackWhite:
             ColorWhite = SCREEN.color565(255,255,255);
@@ -87,6 +107,10 @@ void drawImagePart(int x, int y, int sx, int sy, int w, int h, const uint8_t* da
     //the skin's pictures carry their own width, the one passed in is the RGB565 path's
     (void)dataWidth;
     drawImageOneBitPart(x, y, sx, sy, w, h, data, false);
+#elif FOURBITIMAGES
+    //the same: a four bit picture carries its own width and its palette
+    (void)dataWidth;
+    drawImage4BitPart(x, y, sx, sy, w, h, data, false);
 #else
     if (!data)
         return;

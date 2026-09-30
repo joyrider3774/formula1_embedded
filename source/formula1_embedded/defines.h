@@ -32,6 +32,9 @@
 
 #define skinDefault 0
 #define skinBlackWhite 1
+//the default skin's art kept four bits a pixel with a sixteen colour palette of its own, see
+//tools/fourbit.py. The same pictures as skinDefault, a quarter of the flash of its RGB565
+#define skinDefault4b 2
 
 //FORCESKIN: -1 = the default skin, or the black & white one with a 1 bpp buffer, n = skin n
 //(0 default, 1 black & white). There is no skin option in the game, so only the skin used is
@@ -54,6 +57,13 @@
 //colours, and keeping each of them in sixteen bits costs both flash and the work of writing a
 //colour per pixel. Only one skin is ever built in, so the choice is known here
 #define ONEBITIMAGES (FORCESKIN == skinBlackWhite)
+
+//1 = the skin built in is stored four bits a pixel with a palette of sixteen colours, by
+//tools/fourbit.py, and drawn by drawImage4BitPart. It is the middle of the three: the whole of this
+//game's art is 59 colours and no one picture of it more than 40, so sixteen a picture is close, and
+//it costs about 13 KB against the 51 KB the same art takes as RGB565. Only one skin is ever built
+//in, so the choice is known here
+#define FOURBITIMAGES (FORCESKIN == skinDefault4b)
 
 //1 when the black & white skin is the only one in the build. Every picture is then one bit a pixel
 //and the paths that read RGB565 are dead: a build that is only ever going to draw one bit pictures

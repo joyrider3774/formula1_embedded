@@ -13,12 +13,18 @@ import sys
 from PIL import Image
 
 import onebit
+import fourbit
 
-SKIN_PREFIX = {"default": "default", "black_white": "black_white"}
+SKIN_PREFIX = {"default": "default", "black_white": "black_white", "default_4b": "default_4b"}
 #The black & white skin shows two colours, so it is packed one bit a pixel rather than kept
 #as RGB565, which is both smaller and quicker to draw, see tools/onebit.py. This game has no
 #transparent colour, so none of its pictures carries a mask
 ONE_BIT_SKINS = {"black_white"}
+#Skins whose pictures are written four bits a pixel with a palette of their own, see
+#tools/fourbit.py. The art sits in assets/skins like any other skin's, already cut to sixteen
+#colours by tools/make_4b_skin.py, so what the device shows is what is in the repository and a
+#picture that came out badly can be painted over by hand. The CHGame builds this one, see FORCESKIN
+FOUR_BIT_SKINS = {"default_4b"}
 #this game draws nothing through a transparent colour, so no picture carries a mask
 COLOR_TRANSPARENT = None
 
@@ -64,6 +70,11 @@ def convert(src, out, var, skin, keep_raw=False):
 
     Every caller wants that same choice made, so it is made here and not in each of them."""
     width, height, pixels = to_rgb565(src)
+    if skin in FOUR_BIT_SKINS:
+        data, worst = fourbit.encode(pixels, width, height, COLOR_TRANSPARENT)
+        fourbit.write_header(out, os.path.basename(src), var, var + "_data", width, height, data,
+                             "png2rgb565.py")
+        return width, height
     if skin in ONE_BIT_SKINS:
         data = onebit.encode(pixels, width, height, COLOR_TRANSPARENT, keep_raw)
         onebit.write_header(out, os.path.basename(src), var, var + "_data", width, height, data,
