@@ -15,6 +15,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+//mkdir and the reason it failed, for the folder the save sits in
+#include <sys/stat.h>
+#include <errno.h>
 
 #include "PlatformGamebuinoFont.h"
 #include "gamebuino.h"
@@ -417,6 +420,20 @@ void Platform_Log(const char* format, ...)
 // Saving
 // ===========================================================================
 
+//Makes the folder the save sits in, if it is not there already. A file cannot be opened for
+//writing in a folder that does not exist, and nothing was creating it: the first save did nothing
+//at all, fopen returning NULL and the write being dropped on the floor without a word.
+//The card is FAT, so long file names have to be on for a folder of more than eight characters to
+//be made at all, which Blockdude and Puzzleland both are. See CONFIG_FATFS_LFN_HEAP in
+//platforms/aka/sdkconfig
+static bool EnsureSaveFolder(void)
+{
+	if ((mkdir(saveFolder, 0777) == 0) || (errno == EEXIST))
+		return true;
+	Platform_Log("cannot make %s: %s\n", saveFolder, strerror(errno));
+	return false;
+}
+
 void Platform_StorageRead(uint16_t offset, uint8_t* data, uint16_t length)
 {
 	memset(data, 0, length);
@@ -442,6 +459,9 @@ void Platform_StorageWrite(uint16_t offset, const uint8_t* data, uint16_t length
 	if (offset + length > sizeof(block))
 		return;
 	memcpy(block + offset, data, length);
+	//the folder has to be there before a file can be opened in it
+	if (!EnsureSaveFolder())
+		return;
 	f = fopen(savePath, "wb");
 	if (!f)
 		return;
@@ -472,8 +492,22 @@ void Platform_Init(const char* appName)
 
 	if (appName && *appName)
 	{
-		snprintf(saveFolder, sizeof(saveFolder), MOUNT_POINT "/%s", appName);
-		snprintf(savePath, sizeof(savePath), "%s/save.bin", saveFolder);
+		//Named after the game and not after the build. appName carries the version for the title
+		//screen to show, and a save written by one version is meant to be read by the next, so
+		//the folder is what comes before the first space: "Znax v1.0" saves in "Znax"
+		char folder[32];
+		size_t n = 0;
+		while (appName[n] && (appName[n] != ' ') && ((n + 1) < sizeof(folder)))
+		{
+			folder[n] = appName[n];
+			n++;
+		}
+		folder[n] = '\0';
+		if (n)
+		{
+			snprintf(saveFolder, sizeof(saveFolder), MOUNT_POINT "/%s", folder);
+			snprintf(savePath, sizeof(savePath), "%s/save.bin", saveFolder);
+		}
 	}
 }
 
