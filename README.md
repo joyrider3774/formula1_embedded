@@ -71,7 +71,7 @@ Every [release](https://github.com/joyrider3774/formula1_embedded/releases) has 
 | [PlayStation](https://en.wikipedia.org/wiki/PlayStation_(console)) | PSX_Formula1.exe | open it in an emulator or send it to a console that runs unsigned code, the progress is not saved yet |
 | [PlayStation Portable](https://en.wikipedia.org/wiki/PlayStation_Portable) | PSP_Formula1.PBP | rename it to EBOOT.PBP and put it in ms0:/PSP/GAME/Formula1/ on the memory stick, or open it in PPSSPP |
 | [PlayStation Vita](https://en.wikipedia.org/wiki/PlayStation_Vita) | Vita_Formula1.vpk | install it with VitaShell on a Vita with homebrew enabled, or open it in Vita3K |
-| [CHGame](https://github.com/bateske/CH32SerialBoot) | `CHGame_Formula1.bin` | flash it over USB with the `chgame-upload` that comes with the board package: `chgame-upload -port COM6 flash CHGame_Formula1.bin -run`. |
+| [CHGame](https://github.com/bateske/CHGame) | `CHGame_Formula1.bin` | flash it over USB with the `chgame-upload` that comes with the board package: `chgame-upload -port COM6 flash CHGame_Formula1.bin -run`. |
 | Windows | Windows_Formula1.exe | runs on its own, the high score is saved next to it in Formula1.sav |
 | MS-DOS | DOS_Formula1.zip | unzip FORMULA1.EXE onto a DOS machine or into DOSBox and run it, the high score is saved next to it in FORMULA1.SAV |
 | MS-DOS, not dithered | DOS_Formula1_ND.zip | the same program with `DITHERING` 0, unzip FORMU_ND.EXE and run it the same way. On a 256 colour screen a shade the palette has no colour for is the nearer one it does have, instead of a pattern of the two |
@@ -166,7 +166,7 @@ The Arduino devices are built with arduino-cli 1.5.1 and the versions below. The
 | Gamebuino META | gamebuino:samd 1.2.2 | Gamebuino META 1.3.3 |
 | Adafruit PyBadge, PyGamer | adafruit:samd 1.7.16 | Adafruit GFX Library 1.12.6, Adafruit ST7735 and ST7789 Library 1.5.15, Adafruit BusIO 1.17.4, Adafruit NeoPixel 1.15.5, Adafruit SPIFlash 5.1.1 |
 | PicoSystem, Explorer, Tufty 2350, Thumby Color | rp2040:rp2040 5.5.0 | none, everything they use comes with the core |
-| CHGame | CHGame:ch32v 0.2.4 | none, the core brings its own riscv-none-embed-gcc |
+| CHGame | CHGame:ch32v 0.3.0 | none, the core brings its own riscv-none-embed-gcc |
 
 The ESPboy draws through LovyanGFX and only includes TFT_eSPI's header, so the exact TFT_eSPI does not matter much.  
 The Gamebuino's core needs Arduino's own arduino:samd 1.8.14 beside it for sam.h, without it the build stops at "sam.h: No such file or directory".  
