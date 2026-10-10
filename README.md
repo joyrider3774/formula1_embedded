@@ -71,7 +71,7 @@ Every [release](https://github.com/joyrider3774/formula1_embedded/releases) has 
 | [PlayStation](https://en.wikipedia.org/wiki/PlayStation_(console)) | PSX_Formula1.exe | open it in an emulator or send it to a console that runs unsigned code, the progress is not saved yet |
 | [PlayStation Portable](https://en.wikipedia.org/wiki/PlayStation_Portable) | PSP_Formula1.PBP | rename it to EBOOT.PBP and put it in ms0:/PSP/GAME/Formula1/ on the memory stick, or open it in PPSSPP |
 | [PlayStation Vita](https://en.wikipedia.org/wiki/PlayStation_Vita) | Vita_Formula1.vpk | install it with VitaShell on a Vita with homebrew enabled, or open it in Vita3K |
-| [CHGame](https://github.com/bateske/CHGame) | `CHGame_Formula1.bin` | flash it over USB with the `chgame-upload` that comes with the board package: `chgame-upload -port COM6 flash CHGame_Formula1.bin -run`. |
+| [CHGame](https://github.com/bateske/CHGame) | `CHGame_Formula1.bin` **and** `FORMULA1.DAT` | flash it over USB with the `chgame-upload` that comes with the board package: `chgame-upload -port COM6 flash CHGame_Formula1.bin -run`. **and copy `FORMULA1.DAT` into the root of the microSD card**. The game's pictures are on that card and it draws nothing without it: it says so on a screen of its own and stops. Copy the file to a freshly formatted card if it says the file is in too many pieces. |
 | Windows | Windows_Formula1.exe | runs on its own, the high score is saved next to it in Formula1.sav |
 | MS-DOS | DOS_Formula1.zip | unzip FORMULA1.EXE onto a DOS machine or into DOSBox and run it, the high score is saved next to it in FORMULA1.SAV |
 | MS-DOS, not dithered | DOS_Formula1_ND.zip | the same program with `DITHERING` 0, unzip FORMU_ND.EXE and run it the same way. On a 256 colour screen a shade the palette has no colour for is the nearer one it does have, instead of a pattern of the two |
@@ -176,6 +176,20 @@ Its CH32X035 has 50944 bytes of flash for the game and 20464 bytes of RAM, so it
 white skin alone and nothing else: every picture is packed one bit a pixel instead of as RGB565,
 which is what makes the game fit at all. See `FORCESKIN` and `ONEBITIMAGES` in `defines.h` and
 `source/*/PlatformCHGame.h`.
+
+The released build reads its art off the microSD card instead (`CARDIMAGES`, see `cardimages.h`),
+which changes what the device can hold:
+
+* both skins are on the card in full RGB565, and the game can be asked for either of them
+  while it runs, instead of the one reduced skin a flash build has room for;
+* the game drops from 74% of the flash to 58%, the art no longer being in it.
+
+The card file is `FORMULA1.DAT`, written into `releases/` by `tools/mkcard.py` as part of the build and
+released beside the binary. It holds a section per kind of data, so what the game later wants from
+the card goes in beside the art rather than in a file of its own. A picture whose rows are each one
+colour is kept as one colour a row rather than as pixels, which is what makes a plain background
+cost nothing. The reader is CHSd, which the board package ships; a flash build needs none of it.
+See `source/*/PlatformCHGame.h` for the switch and `tools/mkcard.py` for what is on the card.
 
 The Windows build draws through the same LovyanGFX 1.1.9, see `platforms/windows/CMakeLists.txt`.
 

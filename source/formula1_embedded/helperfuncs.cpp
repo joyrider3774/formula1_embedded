@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include "commonvars.h"
 #include "helperfuncs.h"
+//the art read from a card, where a card build gets its rows from
+#include "cardimages.h"
 #include "fourbitimage.h"
 //the one bit pictures of the black & white skin, shared with anything else
 //that reads them
@@ -19,6 +21,9 @@ static inline const uint16_t* ImageRow(const void* src, uint16_t* scratch, int c
     return scratch;
 }
 
+//A card build has no art in flash at all: the pictures come off the card while the game runs,
+//every skin of them, see cardimages.h. So none of the generated headers are part of it
+#if !CARDIMAGES
 //only the skin FORCESKIN picks is part of the build (a 1 bpp buffer forces the black & white one)
 #if FORCESKIN == skinDefault
 #include "images/default/background_RGB565_LE.h"
@@ -45,15 +50,33 @@ static inline const uint16_t* ImageRow(const void* src, uint16_t* scratch, int c
 
 
 #endif
+#endif
 
-//the skin in use, the one FORCESKIN builds in
+//The skin in use. A flash build has the one FORCESKIN put in it and no other; a card build has
+//every skin on the card and this is whichever of them is being shown, see CardImages_UseSkin
 uint8_t currentSkin(void)
 {
+#if CARDIMAGES
+    return CardImages_Skin();
+#else
     return FORCESKIN;
+#endif
 }
 
 void preloadImages(void)
 {
+#if CARDIMAGES
+    //Every picture comes off the card, by the numbers tools/mkcard.py generated into cardindex.h.
+    //The skin is not decided here any more: the card holds all of them and CardImages_UseSkin
+    //picks one, so this runs again when that changes
+    ColorWhite = SCREEN.color565(255,255,255);
+    ColorBlack = SCREEN.color565(0,0,0);
+    imgBackground = CardImages_Get(CARD_IMG_BACKGROUND);
+    imgBigFont = CardImages_Get(CARD_IMG_BIGFONT);
+    imgLcdFont = CardImages_Get(CARD_IMG_LCDFONT);
+    imgEnemy = CardImages_Get(CARD_IMG_ENEMY);
+    imgPlayer = CardImages_Get(CARD_IMG_PLAYER);
+#else
     switch(currentSkin())
     {
 #if FORCESKIN == skinDefault
@@ -90,6 +113,7 @@ void preloadImages(void)
             break;
 #endif
     }
+#endif
 }
 
 void fillScreen(uint16_t color)
@@ -132,7 +156,13 @@ void drawImagePart(int x, int y, int sx, int sy, int w, int h, const uint8_t* da
     for (int r = r0; r < r1; r++)
     {
         const int dy = y + r;
+#if CARDIMAGES
+        //no flash array to index: the row comes from the arena or off the card, see cardimages.h
+        if (!CardImages_Row(data, sx + c0, sy + r, cols, row))
+            memset(row, 0, (size_t)cols * sizeof(uint16_t));
+#else
         PLATFORM_READ_BYTES((uint8_t*)row, data + ((sy + r) * dataWidth + sx + c0) * sizeof(uint16_t), cols * sizeof(uint16_t));
+#endif
   #if SCREENBUFFER == 16
         uint16_t* d = &((uint16_t*)buffer)[dy * WINDOW_WIDTH + dx];
         //a 16 bpp sprite keeps its pixels byte swapped
@@ -147,6 +177,26 @@ void drawImagePart(int x, int y, int sx, int sy, int w, int h, const uint8_t* da
         for (int c = 0; c < cols; c++)
             SetBufferBit((uint8_t*)buffer, dx + c, dy, row[c]);
   #endif
+    }
+#else
+#if CARDIMAGES
+    //THE BUS RULE: where the card shares the display's bus, reading it takes the bus over - the
+    //panel is deselected and the SPI set up for the card, see Platform_CardRead. So a row is
+    //fetched with nothing of the display's open and only then sent, each row in a transaction of
+    //its own. A window around the whole part cannot survive a card read in the middle of it
+    for (int r = r0; r < r1; r++)
+    {
+        if (!CardImages_Row(data, sx + c0, sy + r, cols, row))
+            memset(row, 0, (size_t)cols * sizeof(uint16_t));
+        SCREEN.startWrite();
+  #if LOVYANGFX
+        SCREEN.setAddrWindow(dx, y + r, cols, 1);
+        //true: the values are plain RGB565, the library puts them in display order
+        SCREEN.writePixels(row, cols, true);
+  #else
+        GFX.pushImage(dx, y + r, cols, 1, row);
+  #endif
+        SCREEN.endWrite();
     }
 #else
     //straight to the display. The chip select sits on the I/O expander, every write
@@ -167,6 +217,7 @@ void drawImagePart(int x, int y, int sx, int sy, int w, int h, const uint8_t* da
   #endif
     }
     SCREEN.endWrite();
+#endif
 #endif
 #endif
 }

@@ -32,6 +32,20 @@
 //for 0 (straight to the display) or a 1 bpp buffer, which is 2048 bytes. An 8 bpp buffer would be
 //16384 of the 20464 and leave nothing for the stack, the heap and the SD card, so it is not
 //offered. A build can still set this itself
+//There is a card slot on this board, and this device reads its art off it rather than carrying
+//it in flash: every skin in full RGB565 instead of the one reduced skin that fits. See CARDIMAGES
+//in defines.h and the card file tools/mkcard.py writes.
+//Set here and not only by the build, so the Arduino IDE builds the same thing; -DCARDIMAGES=0
+//builds the old flash version. It has to be settled here, before the switches below that ask it
+#ifndef CARDIMAGES
+#define CARDIMAGES 1
+#endif
+//Only such a build, because saying so is what pulls the reader in (CHSd, see the card section of
+//PlatformCHGame.cpp): a flash build needs no library installed
+#if CARDIMAGES
+#define PLATFORM_HAS_CARD 1
+#endif
+
 #ifndef SCREENBUFFER
 #define SCREENBUFFER 0
 #endif
@@ -47,7 +61,9 @@
 //Not with a 1 bpp buffer: that holds two colours, so the four bit art would go through the
 //brightness rule in SetBufferBit and come out as those two anyway, having cost the flash of
 //sixteen. There the black & white skin is left to defines.h to pick
-#if !defined(FORCESKIN) && (SCREENBUFFER != 1)
+//A card build names no skin: every one of them is on the card in full RGB565 and the game is
+//asked for one while it runs, see CardImages_UseSkin
+#if !defined(FORCESKIN) && (SCREENBUFFER != 1) && !CARDIMAGES
 #define FORCESKIN skinDefault4b
 #endif
 
@@ -140,6 +156,7 @@ typedef PlatformCHGameBuffer PlatformBuffer;
 
 //flash is ordinary memory on the CH32X035, it can be read like any other
 #define PLATFORM_PROGMEM
+
 #define PLATFORM_READ_BYTE(addr) (*(const uint8_t*)(addr))
 
 //the images are little endian RGB565 like the chip itself, memcpy keeps a read from an odd
