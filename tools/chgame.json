@@ -1,0 +1,12 @@
+{
+  "id": "formula1",
+  "title": "FORMULA 1",
+  "author": "Willems Davy",
+  "version": "1.1",
+  "description": "Formula 1 Game & Watch is a small, fictive game & watch style lcd game with high score keeping",
+  "genre": "Action",
+  "license": "MIT",
+  "url": "https://github.com/joyrider3774/formula1_embedded",
+  "sourceUrl": "https://github.com/joyrider3774/formula1_embedded",
+  "sdcard": "sdcard"
+}
